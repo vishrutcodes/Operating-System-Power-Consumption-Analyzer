@@ -1,0 +1,4 @@
+Timestamp,Battery_%,Power_Watts,CPU_Freq,CPU_Usage,Top_Process,Top_Proc_Score
+23:53:03,76,0,1700.0,40.4,MsMpEng.exe,5.414191035242393
+23:53:05,76,0,1700.0,37.8,System Idle Process,635.4167639051661
+23:53:07,76,0,1700.0,36.3,System Idle Process,641.2500972384995

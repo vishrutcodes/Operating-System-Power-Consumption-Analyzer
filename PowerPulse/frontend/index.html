@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-theme="dark" style="background-color:#0f172a;color-scheme:dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operating Systems Power Consumption Analyzer</title>
+  <script>
+    // Apply saved theme instantly before paint to prevent flash
+    (function() {
+      var theme = localStorage.getItem('powerpulse_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.backgroundColor = theme === 'light' ? '#ffffff' : '#0f172a';
+      document.documentElement.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+    })();
+  </script>
+</head>
+
+<body style="background-color:#0f172a">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: powerpulse
+Version: 0.1.0
+Summary: A real-time OS power consumption analysis tool.
+Author-email: User <user@example.com>
+Requires-Python: >=3.8
+Requires-Dist: psutil
+Requires-Dist: rich
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: websockets
+Requires-Dist: google-genai
+Requires-Dist: python-dotenv
