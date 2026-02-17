@@ -17,8 +17,6 @@ import { useAlerts } from './hooks/useAlerts';
 // eslint-disable-next-line react-refresh/only-export-components -- context is used by Layout and pages
 export const MetricsContext = createContext(null);
 
-const API_URL = "ws://127.0.0.1:8000/ws/metrics";
-
 function App() {
   const [data, setData] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
