@@ -605,7 +605,7 @@ const ReportDocument = React.forwardRef(({ data, history, benchmarks }, ref) => 
 
                 {/* Full Sensor Details Table */}
                 {thermal.sensors.length > 0 && (
-                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md mt-8 mb-10" style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md mt-14 mb-10" style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                         <div className="px-5 py-3 mb-4 bg-gradient-to-r from-orange-50 to-white border-b border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-1.5"><Cpu size={16} className="text-orange-500" /> Complete Sensor Details</h3>
                         </div>
