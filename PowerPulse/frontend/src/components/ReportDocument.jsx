@@ -1,6 +1,6 @@
 import React from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, RadialBarChart, RadialBar, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Zap, ShieldCheck, HardDrive, Wifi, Cpu, Battery, MemoryStick, Activity, AlertTriangle, CheckCircle, Info, Thermometer, Flame, Gauge, Trophy } from 'lucide-react';
+import { Zap, ShieldCheck, HardDrive, Wifi, Cpu, Battery, MemoryStick, Activity, AlertTriangle, CheckCircle, Info, Thermometer, Flame, Gauge, Trophy, DollarSign, Leaf, Monitor, Heart, Shield, Plug } from 'lucide-react';
 
 function formatTimeLeft(seconds) {
     if (seconds == null || seconds < 0) return '—';
@@ -21,7 +21,13 @@ function formatBytes(bytes) {
     return `${kb.toFixed(1)} KB`;
 }
 
-const ReportDocument = React.forwardRef(({ data, history, benchmarks }, ref) => {
+const TDP_ESTIMATES = {
+    desktop: { idle: 50, full: 250 },
+    laptop: { idle: 8, full: 65 },
+    workstation: { idle: 80, full: 400 },
+};
+
+const ReportDocument = React.forwardRef(({ data, history, benchmarks, energySettings, powerProfiles, gpuInfo }, ref) => {
     if (!data) return null;
 
     const { sys_info, health_score, suggestions, uptime, cpu, battery, memory, cpu_cores, disk_io, net_io, processes } = data;

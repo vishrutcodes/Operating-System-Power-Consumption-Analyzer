@@ -1,21 +1,46 @@
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { MetricsContext } from '../App';
 import { useReactToPrint } from 'react-to-print';
 import { Printer, FileText } from 'lucide-react';
 import ReportDocument from '../components/ReportDocument';
 
+function readLocalJSON(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+    catch { return fallback; }
+}
+
 function Reports() {
     const { data, history } = useContext(MetricsContext);
     const componentRef = useRef();
 
-    // Read benchmark history
-    const benchmarks = (() => {
+    const benchmarks = readLocalJSON('powerpulse_benchmark_history', []);
+
+    const energySettings = {
+        region: readLocalJSON('powerpulse_energy_region', { name: 'India', rate: 6.5, currency: '\u20B9', co2: 0.82 }),
+        systemType: localStorage.getItem('powerpulse_system_type') || 'laptop',
+        dailyBudget: parseFloat(localStorage.getItem('powerpulse_daily_budget') || '5'),
+    };
+
+    const powerProfiles = {
+        profiles: readLocalJSON('powerpulse_profiles', []),
+        activeId: localStorage.getItem('powerpulse_active_profile') || 'balanced',
+    };
+
+    const [gpuInfo, setGpuInfo] = useState(null);
+    useEffect(() => {
         try {
-            return JSON.parse(localStorage.getItem('powerpulse_benchmark_history') || '[]');
-        } catch {
-            return [];
-        }
-    })();
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            if (gl) {
+                const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+                setGpuInfo({
+                    vendor: dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : 'Unknown',
+                    renderer: dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : 'Unknown',
+                    version: gl.getParameter(gl.VERSION),
+                });
+            }
+        } catch { /* WebGL unavailable */ }
+    }, []);
 
     const handlePrint = useReactToPrint({
         contentRef: componentRef,
@@ -48,11 +73,17 @@ function Reports() {
                     <FileText size={14} /> Print Preview
                 </div>
 
-                {/* Report Preview Container */}
-                {/* Scaled down to fit screen, but prints full size */}
                 <div className="overflow-y-auto w-full h-full p-8 flex justify-center bg-white">
                     <div className="transform scale-[0.8] origin-top">
-                        <ReportDocument ref={componentRef} data={data} history={history} benchmarks={benchmarks} />
+                        <ReportDocument
+                            ref={componentRef}
+                            data={data}
+                            history={history}
+                            benchmarks={benchmarks}
+                            energySettings={energySettings}
+                            powerProfiles={powerProfiles}
+                            gpuInfo={gpuInfo}
+                        />
                     </div>
                 </div>
             </div>
