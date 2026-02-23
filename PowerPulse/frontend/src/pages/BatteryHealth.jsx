@@ -11,9 +11,11 @@ import {
     Plug, Activity, Heart, Shield, Thermometer, Timer, Sun, Moon
 } from 'lucide-react';
 
-function formatDuration(seconds) {
-    if (seconds == null || seconds < 0) return 'Calculating...';
-    if (seconds === -1) return 'Unlimited (Plugged In)';
+function formatDuration(seconds, isPlugged = false) {
+    if (isPlugged) return 'Plugged In';
+    if (seconds === -1) return 'Unlimited';
+    if (seconds == null || seconds < 0) return 'Unknown';
+    if (seconds === 0) return 'Empty';
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     if (h > 0) return `${h}h ${m}m`;
@@ -181,7 +183,7 @@ function BatteryHealth() {
                         ) : (
                             <div className="flex items-center gap-2 text-yellow-400">
                                 <Timer size={16} />
-                                <span>{formatDuration(battery.secsleft)} remaining</span>
+                                <span>{formatDuration(battery.secsleft, false)} remaining</span>
                             </div>
                         )}
                     </div>
@@ -218,7 +220,7 @@ function BatteryHealth() {
                     </div>
                     <div className="glass-panel p-4">
                         <div className="text-xs text-slate-500 uppercase mb-1">Time Left</div>
-                        <div className="text-2xl font-bold text-yellow-400">{formatDuration(battery.secsleft)}</div>
+                        <div className="text-2xl font-bold text-yellow-400">{formatDuration(battery.secsleft, battery.power_plugged)}</div>
                     </div>
                 </div>
             </div>
