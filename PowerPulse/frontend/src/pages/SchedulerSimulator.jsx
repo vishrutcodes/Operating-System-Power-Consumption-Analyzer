@@ -1,11 +1,14 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+    PieChart, Pie, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+    AreaChart, Area, LineChart, Line, Legend, ScatterChart, Scatter, ZAxis, ComposedChart
 } from 'recharts';
 import {
     Cpu, Play, RotateCcw, Plus, Trash2, Info, Clock, Activity,
-    Zap, ArrowRight, Layers, Timer, BarChart3, AlertTriangle, Settings
+    Zap, ArrowRight, Layers, Timer, BarChart3, AlertTriangle, Settings,
+    PieChart as PieChartIcon, TrendingUp, Target, Radar as RadarIcon, GitBranch, Combine
 } from 'lucide-react';
 
 const ALGORITHMS = {
@@ -293,6 +296,87 @@ function SchedulerSimulator() {
         }));
     }, [simulation]);
 
+    // --- NEW CHART DATA ---
+
+    // 1. CPU Utilization Donut
+    const cpuUtilData = useMemo(() => {
+        if (!simulation) return [];
+        const maxTime = Math.max(...simulation.results.map(p => p.finish));
+        const busyTime = simulation.timeline.length;
+        const idleTime = maxTime - busyTime;
+        return [
+            { name: 'CPU Busy', value: busyTime, fill: '#06b6d4' },
+            { name: 'CPU Idle', value: Math.max(0, idleTime), fill: '#334155' },
+        ];
+    }, [simulation]);
+
+    // 2. Process Timeline Area
+    const processTimelineData = useMemo(() => {
+        if (!simulation) return [];
+        const maxTime = Math.max(...simulation.results.map(p => p.finish));
+        const data = [];
+        for (let t = 0; t <= maxTime; t++) {
+            const entry = { time: t };
+            processes.forEach((p, i) => {
+                const executed = simulation.timeline.filter(s => s.pid === p.id && s.time <= t).length;
+                entry[p.name] = executed;
+            });
+            data.push(entry);
+        }
+        return data;
+    }, [simulation, processes]);
+
+    // 3. Waiting vs Turnaround Scatter
+    const scatterData = useMemo(() => {
+        if (!simulation) return [];
+        return simulation.results.map((p, i) => ({
+            name: p.name,
+            waiting: p.waitingTime,
+            turnaround: p.turnaround,
+            burst: p.burst,
+            fill: PROCESS_COLORS[i % PROCESS_COLORS.length],
+        }));
+    }, [simulation]);
+
+    // 4. Algorithm Efficiency Radar
+    const radarData = useMemo(() => {
+        if (!metrics || !simulation) return [];
+        const maxWait = Math.max(...simulation.results.map(p => p.waitingTime), 1);
+        const maxTurn = Math.max(...simulation.results.map(p => p.turnaround), 1);
+        const maxResp = Math.max(...simulation.results.map(p => p.responseTime), 1);
+        return [
+            { metric: 'Low Wait', value: Math.max(0, 100 - (parseFloat(metrics.avgWaiting) / maxWait) * 50), fullMark: 100 },
+            { metric: 'Low Turnaround', value: Math.max(0, 100 - (parseFloat(metrics.avgTurnaround) / maxTurn) * 30), fullMark: 100 },
+            { metric: 'Fast Response', value: Math.max(0, 100 - (parseFloat(metrics.avgResponse) / maxResp) * 50), fullMark: 100 },
+            { metric: 'Throughput', value: Math.min(100, parseFloat(metrics.throughput) * 100), fullMark: 100 },
+            { metric: 'CPU Util', value: parseFloat(metrics.cpuUtil), fullMark: 100 },
+        ];
+    }, [metrics, simulation]);
+
+    // 5. Process Completion Timeline
+    const completionData = useMemo(() => {
+        if (!simulation) return [];
+        return simulation.results
+            .sort((a, b) => a.finish - b.finish)
+            .map((p, i) => ({
+                name: p.name,
+                finish: p.finish,
+                arrival: p.arrival,
+                order: i + 1,
+            }));
+    }, [simulation]);
+
+    // 6. Burst vs Wait Composed
+    const burstWaitData = useMemo(() => {
+        if (!simulation) return [];
+        return simulation.results.map((p, i) => ({
+            name: p.name,
+            burst: p.burst,
+            waiting: p.waitingTime,
+            turnaround: p.turnaround,
+        }));
+    }, [simulation]);
+
     return (
         <div className="flex flex-col gap-6">
             {/* Header */}
@@ -568,6 +652,170 @@ function SchedulerSimulator() {
                                             </BarChart>
                                         </ResponsiveContainer>
                                     </div>
+                                </div>
+
+                                {/* === NEW CHARTS GRID === */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                    {/* 1. CPU Utilization Donut */}
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-panel p-6">
+                                        <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                                            <PieChartIcon size={18} className="text-cyan-400" /> CPU Utilization
+                                        </h3>
+                                        <div className="h-[240px] flex items-center justify-center">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={cpuUtilData}
+                                                        cx="50%" cy="50%"
+                                                        innerRadius={60} outerRadius={90}
+                                                        paddingAngle={3}
+                                                        dataKey="value"
+                                                        stroke="none"
+                                                    >
+                                                        {cpuUtilData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                        ))}
+                                                    </Pie>
+                                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px' }} />
+                                                    <Legend
+                                                        verticalAlign="bottom"
+                                                        iconType="circle"
+                                                        formatter={(value) => <span style={{ color: '#94a3b8', fontSize: '12px' }}>{value}</span>}
+                                                    />
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div className="text-center mt-2">
+                                            <span className="text-2xl font-bold text-cyan-400">{metrics?.cpuUtil}%</span>
+                                            <span className="text-xs text-slate-500 ml-2">utilization</span>
+                                        </div>
+                                    </motion.div>
+
+                                    {/* 2. Algorithm Efficiency Radar */}
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel p-6">
+                                        <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                                            <RadarIcon size={18} className="text-emerald-400" /> Efficiency Radar
+                                        </h3>
+                                        <div className="h-[280px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
+                                                    <PolarGrid stroke="#334155" />
+                                                    <PolarAngleAxis dataKey="metric" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                                    <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 9 }} />
+                                                    <Radar name="Score" dataKey="value" stroke="#10b981" fill="#10b981" fillOpacity={0.25} strokeWidth={2} />
+                                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px' }} />
+                                                </RadarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </motion.div>
+
+                                    {/* 3. Process Timeline Area */}
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-panel p-6">
+                                        <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                                            <TrendingUp size={18} className="text-blue-400" /> Process Execution Progress
+                                        </h3>
+                                        <div className="h-[240px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <AreaChart data={processTimelineData}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                                                    <XAxis dataKey="time" stroke="#94a3b8" tick={{ fontSize: 10 }} label={{ value: 'Time', position: 'insideBottom', offset: -2, style: { fill: '#64748b', fontSize: 11 } }} />
+                                                    <YAxis stroke="#64748b" tick={{ fontSize: 10 }} label={{ value: 'Units Done', angle: -90, position: 'insideLeft', style: { fill: '#64748b', fontSize: 11 } }} />
+                                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px' }} />
+                                                    {processes.map((p, i) => (
+                                                        <Area
+                                                            key={p.id}
+                                                            type="monotone"
+                                                            dataKey={p.name}
+                                                            stackId="1"
+                                                            stroke={PROCESS_COLORS[i % PROCESS_COLORS.length]}
+                                                            fill={PROCESS_COLORS[i % PROCESS_COLORS.length]}
+                                                            fillOpacity={0.3}
+                                                        />
+                                                    ))}
+                                                    <Legend iconType="circle" formatter={(value) => <span style={{ color: '#94a3b8', fontSize: '11px' }}>{value}</span>} />
+                                                </AreaChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </motion.div>
+
+                                    {/* 4. Waiting vs Turnaround Scatter */}
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel p-6">
+                                        <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                                            <Target size={18} className="text-yellow-400" /> Waiting vs Turnaround
+                                        </h3>
+                                        <div className="h-[240px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <ScatterChart>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                                                    <XAxis dataKey="waiting" name="Waiting Time" stroke="#94a3b8" tick={{ fontSize: 10 }} label={{ value: 'Waiting Time', position: 'insideBottom', offset: -2, style: { fill: '#64748b', fontSize: 11 } }} />
+                                                    <YAxis dataKey="turnaround" name="Turnaround" stroke="#64748b" tick={{ fontSize: 10 }} label={{ value: 'Turnaround', angle: -90, position: 'insideLeft', style: { fill: '#64748b', fontSize: 11 } }} />
+                                                    <ZAxis dataKey="burst" range={[80, 400]} name="Burst Time" />
+                                                    <Tooltip
+                                                        contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px' }}
+                                                        formatter={(value, name) => [value, name]}
+                                                        labelFormatter={(label) => ''}
+                                                        cursor={{ strokeDasharray: '3 3' }}
+                                                    />
+                                                    <Scatter data={scatterData} name="Processes">
+                                                        {scatterData.map((entry, index) => (
+                                                            <Cell key={`sc-${index}`} fill={entry.fill} />
+                                                        ))}
+                                                    </Scatter>
+                                                </ScatterChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div className="flex flex-wrap gap-3 mt-3 justify-center">
+                                            {scatterData.map((p, i) => (
+                                                <span key={i} className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.fill }} />
+                                                    {p.name}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+
+                                    {/* 5. Process Completion Timeline */}
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="glass-panel p-6">
+                                        <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                                            <GitBranch size={18} className="text-pink-400" /> Completion Timeline
+                                        </h3>
+                                        <div className="h-[240px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <LineChart data={completionData}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                                                    <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                                                    <YAxis stroke="#64748b" tick={{ fontSize: 10 }} label={{ value: 'Time', angle: -90, position: 'insideLeft', style: { fill: '#64748b', fontSize: 11 } }} />
+                                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px' }} />
+                                                    <Line type="monotone" dataKey="arrival" name="Arrival" stroke="#64748b" strokeWidth={2} dot={{ fill: '#64748b', r: 5 }} strokeDasharray="5 5" />
+                                                    <Line type="monotone" dataKey="finish" name="Finish" stroke="#ec4899" strokeWidth={3} dot={{ fill: '#ec4899', r: 6, strokeWidth: 2, stroke: '#1e293b' }} />
+                                                    <Legend iconType="circle" formatter={(value) => <span style={{ color: '#94a3b8', fontSize: '11px' }}>{value}</span>} />
+                                                </LineChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </motion.div>
+
+                                    {/* 6. Burst vs Wait Composed */}
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel p-6">
+                                        <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                                            <Combine size={18} className="text-orange-400" /> Burst vs Waiting Overlay
+                                        </h3>
+                                        <div className="h-[240px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <ComposedChart data={burstWaitData}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                                                    <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                                                    <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
+                                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px' }} />
+                                                    <Bar dataKey="burst" name="Burst Time" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={28} fillOpacity={0.8} />
+                                                    <Bar dataKey="waiting" name="Waiting Time" fill="#f97316" radius={[4, 4, 0, 0]} barSize={28} fillOpacity={0.8} />
+                                                    <Line type="monotone" dataKey="turnaround" name="Turnaround" stroke="#a855f7" strokeWidth={3} dot={{ fill: '#a855f7', r: 5, strokeWidth: 2, stroke: '#1e293b' }} />
+                                                    <Legend iconType="circle" formatter={(value) => <span style={{ color: '#94a3b8', fontSize: '11px' }}>{value}</span>} />
+                                                </ComposedChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </motion.div>
+
                                 </div>
                             </motion.div>
                         )}
