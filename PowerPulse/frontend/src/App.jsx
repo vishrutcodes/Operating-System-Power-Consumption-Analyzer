@@ -12,10 +12,6 @@ import KernelLabPage from './pages/KernelLab';
 import ThermalMonitorPage from './pages/ThermalMonitor';
 
 import BenchmarksPage from './pages/Benchmarks';
-import EnergyEstimatorPage from './pages/EnergyEstimator';
-import GPUMonitorPage from './pages/GPUMonitor';
-import BatteryHealthPage from './pages/BatteryHealth';
-import PowerProfilesPage from './pages/PowerProfiles';
 import SchedulerSimulatorPage from './pages/SchedulerSimulator';
 import { useAlerts } from './hooks/useAlerts';
 
@@ -158,10 +154,7 @@ function App() {
 
             <Route path="/benchmarks" element={<BenchmarksPage />} />
             <Route path="/thermal" element={<ThermalMonitorPage />} />
-            <Route path="/energy" element={<EnergyEstimatorPage />} />
-            <Route path="/gpu" element={<GPUMonitorPage />} />
-            <Route path="/battery-health" element={<BatteryHealthPage />} />
-            <Route path="/power-profiles" element={<PowerProfilesPage />} />
+
             <Route path="/scheduler" element={<SchedulerSimulatorPage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />

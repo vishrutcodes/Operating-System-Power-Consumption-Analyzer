@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Zap, Activity, Cpu, Layers, ShieldCheck, FileText, History as HistoryIcon, Settings, Beaker, Info, Gauge, Brain, Thermometer, Power, DollarSign, Monitor, Heart, Plug, GraduationCap } from 'lucide-react';
+import { Zap, Activity, Cpu, Layers, ShieldCheck, FileText, History as HistoryIcon, Settings, Beaker, Info, Gauge, Brain, Thermometer, Power, GraduationCap } from 'lucide-react';
 
 const SHORTCUTS = [
     { key: 'd', path: '/', label: 'Dashboard' },
@@ -12,10 +12,7 @@ const SHORTCUTS = [
     { key: 'k', path: '/kernel-lab', label: 'Kernel Lab' },
     { key: 'b', path: '/benchmarks', label: 'Benchmarks' },
     { key: 't', path: '/thermal', label: 'Thermal Monitor' },
-    { key: 'n', path: '/energy', label: 'Energy & Cost' },
-    { key: 'g', path: '/gpu', label: 'GPU Monitor' },
-    { key: 'y', path: '/battery-health', label: 'Battery Health' },
-    { key: 'w', path: '/power-profiles', label: 'Power Profiles' },
+
     { key: 'x', path: '/scheduler', label: 'CPU Scheduler' },
     { key: 's', path: '/settings', label: 'Settings' },
 ];
@@ -49,10 +46,7 @@ function Layout({ connectionStatus }) {
         { path: "/kernel-lab", label: "Kernel Lab", icon: <Beaker size={20} /> },
         { path: "/benchmarks", label: "Benchmarks", icon: <Gauge size={20} /> },
         { path: "/thermal", label: "Thermal Monitor", icon: <Thermometer size={20} /> },
-        { path: "/energy", label: "Energy & Cost", icon: <DollarSign size={20} /> },
-        { path: "/gpu", label: "GPU Monitor", icon: <Monitor size={20} /> },
-        { path: "/battery-health", label: "Battery Health", icon: <Heart size={20} /> },
-        { path: "/power-profiles", label: "Power Profiles", icon: <Plug size={20} /> },
+
         { path: "/scheduler", label: "CPU Scheduler", icon: <GraduationCap size={20} /> },
         { path: "/settings", label: "Settings", icon: <Settings size={20} /> },
     ];
