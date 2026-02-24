@@ -454,5 +454,4 @@ function StatBox({ label, value }) {
         </div>
     );
 }
-
 export default KernelLab;
