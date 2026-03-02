@@ -192,6 +192,17 @@ This automatically starts both servers for you.
 
 ---
 
+## 🧪 Step 7: Testing the Application
+
+Once both servers are running, it is highly recommended to test the core features to ensure your setup is functioning correctly:
+
+1.  **Live Updates:** Open your browser to `http://localhost:5173`. You should see the dashboard charts animating and updating every second. If they remain flat, verify Terminal 1 (Backend) for any WebSocket errors.
+2.  **Benchmark Run:** Navigate to the **Benchmarks** tab from the sidebar. Run the full benchmark suite to validate that your browser can handle the computational tests and that results are saved correctly.
+3.  **Process Management Check:** Go to the **Processes** tab. Verify that the process tree loads and that you can view details. (Do not arbitrarily kill critical processes!).
+4.  **AI Assistant Test:** Go to the **AI Assistant** tab and send a test message (e.g., "What is my current system health?"). If you configured the `GEMINI_API_KEY` correctly in Step 4, it should respond with real system metrics.
+
+---
+
 ## 📌 Quick Reference
 
 | What | URL |

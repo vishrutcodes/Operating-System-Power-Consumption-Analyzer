@@ -998,6 +998,25 @@ python -m mypy powerpulse/
 
 ---
 
+## 🧪 Testing & Validation
+
+PowerPulse includes a built-in benchmark and testing suite to validate system performance and stability.
+
+### Manual Verification
+
+1.  **System Monitoring:** Open the Dashboard (`/`) and verify that CPU, Memory, Disk, and Network metrics are updating every second.
+2.  **Process Management:** Go to Processes (`/processes`) and try suspending and resuming a safe, non-critical process to verify control functionality.
+3.  **Alerts:** In Settings (`/settings`), temporarily lower the CPU warning threshold. Run a CPU-intensive task or benchmark to ensure desktop notifications and alert sounds trigger correctly.
+
+### Running Benchmarks
+
+Navigate to the Benchmarks page (`/benchmarks`):
+1.  Click **"Run All Benchmarks"**.
+2.  Verify that all 5 tests (CPU, Memory, Compute, Rendering, Multi-Task) complete successfully.
+3.  Check that the results display a Tier Ranking and are saved to the local `<powerpulse_benchmark_history>`.
+
+---
+
 ## 📄 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
