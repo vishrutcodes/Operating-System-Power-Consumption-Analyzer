@@ -221,6 +221,6 @@ This automatically starts both servers for you.
 >
 > If you wish to use, fork, or reference this project, you **must** provide proper attribution to the original author and retain all copyright notices in all copies or substantial portions of the software.
 >
-> For permissions, collaborations, or inquiries, please contact the author via [GitHub](https://github.com/vishrutcodes).
+> For permissions, collaborations, or inquiries, please contact the author at **vishrugupta007@gmail.com** or via [GitHub](https://github.com/vishrutcodes).
 
 **Disclaimer:** This software is provided "as is", without warranty of any kind, express or implied. The author shall not be held liable for any damages arising from the use of this software.
