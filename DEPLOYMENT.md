@@ -202,4 +202,4 @@ This automatically starts both servers for you.
 
 ---
 
-*Made with ❤️ — PowerPulse Team*
+*Built with ❤️ by **Vishrut Gupta***
