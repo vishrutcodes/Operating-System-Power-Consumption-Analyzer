@@ -14,6 +14,7 @@ const SHORTCUTS = [
     { key: 't', path: '/thermal', label: 'Thermal Monitor' },
 
     { key: 'x', path: '/scheduler', label: 'CPU Scheduler' },
+    { key: 'a', path: '/ai-assistant', label: 'AI Assistant' },
     { key: 's', path: '/settings', label: 'Settings' },
 ];
 
@@ -48,6 +49,7 @@ function Layout({ connectionStatus }) {
         { path: "/thermal", label: "Thermal Monitor", icon: <Thermometer size={20} /> },
 
         { path: "/scheduler", label: "CPU Scheduler", icon: <GraduationCap size={20} /> },
+        { path: "/ai-assistant", label: "AI Assistant", icon: <Brain size={20} /> },
         { path: "/settings", label: "Settings", icon: <Settings size={20} /> },
     ];
 

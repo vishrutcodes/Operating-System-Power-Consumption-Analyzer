@@ -552,3 +552,79 @@ body {
     page-break-after: avoid !important;
   }
 }
+
+/* ========================================
+   AI ASSISTANT STYLES
+   ======================================== */
+
+#ai-assistant-page .glass-panel:hover {
+  transform: none;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.ai-message-content strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.ai-message-content em {
+  color: #94a3b8;
+}
+
+.ai-code-block {
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(100, 116, 139, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.ai-inline-code {
+  background-color: rgba(100, 116, 139, 0.25);
+  color: #22d3ee;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85em;
+}
+
+.ai-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+.ai-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.ai-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #06b6d4;
+  font-weight: bold;
+}
+
+/* Light theme overrides for AI chat */
+[data-theme="light"] .ai-code-block {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+[data-theme="light"] .ai-inline-code {
+  background-color: #e2e8f0;
+  color: #0891b2;
+}
+
+[data-theme="light"] .ai-message-content strong {
+  color: #1e293b;
+}

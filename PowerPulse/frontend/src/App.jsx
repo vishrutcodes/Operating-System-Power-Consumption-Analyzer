@@ -13,6 +13,7 @@ import ThermalMonitorPage from './pages/ThermalMonitor';
 
 import BenchmarksPage from './pages/Benchmarks';
 import SchedulerSimulatorPage from './pages/SchedulerSimulator';
+import AIAssistantPage from './pages/AIAssistant';
 import { useAlerts } from './hooks/useAlerts';
 
 // eslint-disable-next-line react-refresh/only-export-components -- context is used by Layout and pages
@@ -156,6 +157,7 @@ function App() {
             <Route path="/thermal" element={<ThermalMonitorPage />} />
 
             <Route path="/scheduler" element={<SchedulerSimulatorPage />} />
+            <Route path="/ai-assistant" element={<AIAssistantPage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

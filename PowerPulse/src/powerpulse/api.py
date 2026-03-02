@@ -2,12 +2,17 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 from dataclasses import asdict
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from .monitor import SystemMonitor
 from . import database
 import os
 import math
+import json
+from dotenv import load_dotenv
+from google import genai
+
+load_dotenv()
 
 
 app = FastAPI(title="PowerPulse API")
@@ -252,6 +257,97 @@ def force_kill_process_tree(pid: int):
     """Force kill process tree instantly - for resistant browsers like Edge."""
     success, msg = monitor.force_kill_process_tree(pid)
     return {"success": success, "message": msg}
+
+# ── AI Assistant (Gemini 2.5 Flash) ──────────────────────────────
+
+class ChatMessage(BaseModel):
+    role: str   # "user" or "model"
+    text: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: List[ChatMessage] = []
+
+SYSTEM_PROMPT = """You are PowerPulse AI Assistant, an expert on Operating System concepts and the PowerPulse – Operating System Power Consumption Analyzer application.
+
+YOUR SCOPE (answer ONLY about these topics):
+• Operating System fundamentals: processes, threads, CPU scheduling (FCFS, SJF, SRTF, Round Robin, Priority), context switching, inter-process communication
+• Memory management: paging, segmentation, virtual memory, page replacement algorithms, cache, TLB
+• File systems, disk I/O, disk scheduling algorithms
+• Power management, ACPI, CPU frequency scaling, thermal throttling
+• System monitoring: CPU usage, memory usage, swap, battery, network I/O, disk I/O
+• The PowerPulse application features: Dashboard (real-time metrics), Insights (health score, suggestions), Processes (kill/suspend/resume/priority/affinity), Resources (CPU cores, memory, network, disk), History (logged metrics over time), Reports (printable system reports), Kernel Lab (OS experiments), Benchmarks (performance tests), Thermal Monitor (temperature tracking), CPU Scheduler Simulator (FCFS, SJF, SRTF, RR, Priority scheduling), Settings (theme, alerts)
+
+RULES:
+1. If the user asks something outside of Operating Systems or this application, politely decline and redirect them to OS topics.
+2. When live system data is provided below, use it to give specific, personalized answers (e.g. "Your CPU is at 45%").
+3. Format responses in Markdown: use **bold**, bullet lists, and code blocks where appropriate.
+4. Be concise and educational. Relate answers to real-world system behavior when possible.
+5. If asked "what can you do?", describe your capabilities within the scope above.
+"""
+
+@app.post("/api/chat")
+async def chat_with_ai(req: ChatRequest):
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            return {"success": False, "reply": "Gemini API key not configured. Please add GEMINI_API_KEY to the .env file."}
+
+        # Gather live system snapshot for context
+        try:
+            battery = monitor.get_battery_info()
+            cpu = monitor.get_cpu_info()
+            mem_info = monitor.get_memory_info()
+            thermal = monitor.get_thermal_info()
+            score = monitor.get_system_score()
+            top_procs = monitor.get_top_processes(5)
+            swap = monitor.get_swap_info()
+
+            live_context = f"""
+LIVE SYSTEM DATA (current snapshot):
+- CPU Usage: {cpu.usage_percent:.1f}% across {cpu.core_count} cores
+- Memory: {mem_info.get('percent', 0):.1f}% used ({mem_info.get('used', 0) / (1024**3):.1f} GB / {mem_info.get('total', 0) / (1024**3):.1f} GB)
+- Swap: {swap.get('percent', 0):.1f}% used
+- Battery: {battery.percent:.0f}% {'(Charging)' if battery.power_plugged else '(On Battery)'}
+- Thermal: Max {thermal.get('max_temp', 0):.0f}°C, Avg {thermal.get('avg_temp', 0):.0f}°C
+- Health Score: {score}/100
+- Top Processes by CPU: {', '.join(f"{p.name} ({p.cpu_percent:.1f}%)" for p in top_procs)}
+"""
+        except Exception:
+            live_context = "\nLIVE SYSTEM DATA: Not available at the moment.\n"
+
+        # Build Gemini contents list from history
+        contents = []
+        for msg in req.history:
+            contents.append({
+                "role": msg.role,
+                "parts": [{"text": msg.text}]
+            })
+
+        # Add current user message
+        contents.append({
+            "role": "user",
+            "parts": [{"text": req.message}]
+        })
+
+        client = genai.Client(api_key=api_key)
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=contents,
+            config={
+                "system_instruction": SYSTEM_PROMPT + live_context,
+                "temperature": 0.7,
+                "max_output_tokens": 2048,
+            }
+        )
+
+        reply = response.text if response.text else "I'm sorry, I couldn't generate a response. Please try again."
+        return {"success": True, "reply": reply}
+
+    except Exception as e:
+        print(f"Chat error: {e}")
+        return {"success": False, "reply": f"An error occurred: {str(e)}"}
 
 @app.get("/")
 def read_root():
