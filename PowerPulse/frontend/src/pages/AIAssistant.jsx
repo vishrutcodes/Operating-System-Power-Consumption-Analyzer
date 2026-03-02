@@ -123,14 +123,14 @@ function AIAssistant() {
             {/* Header */}
             <div className="flex items-center justify-between mb-4 shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-gradient-to-br from-violet-500/20 to-cyan-500/20 rounded-xl border border-violet-500/30">
-                        <Bot className="text-violet-400" size={28} />
+                    <div className="p-2.5 bg-cyan-500/20 rounded-xl border border-cyan-500/30">
+                        <Bot className="text-cyan-400" size={28} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                        <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradient-shift_4s_ease_infinite]">
                             AI Assistant
                         </h1>
-                        <p className="text-xs text-slate-500">Powered by Gemini 2.5 Flash • OS & PowerPulse expert</p>
+                        <p className="text-xs text-sky-400/60">Powered by Gemini 2.5 Flash • OS & PowerPulse expert</p>
                     </div>
                 </div>
                 {hasMessages && (
@@ -154,11 +154,11 @@ function AIAssistant() {
                 >
                     {!hasMessages && (
                         <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in-up">
-                            <div className="p-4 bg-gradient-to-br from-violet-500/10 to-cyan-500/10 rounded-2xl border border-violet-500/20 mb-6">
-                                <Sparkles className="text-violet-400" size={48} />
+                            <div className="p-4 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 mb-6">
+                                <Sparkles className="text-cyan-400" size={48} />
                             </div>
-                            <h2 className="text-xl font-bold text-slate-200 mb-2">Ask me anything about Operating Systems</h2>
-                            <p className="text-slate-500 text-sm max-w-md mb-8">
+                            <h2 className="text-xl font-bold text-sky-100 mb-2">Ask me anything about Operating Systems</h2>
+                            <p className="text-sky-400/60 text-sm max-w-md mb-8">
                                 I can explain OS concepts, analyze your live system metrics, and help you understand PowerPulse features.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg w-full">
@@ -169,7 +169,7 @@ function AIAssistant() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.05 }}
                                         onClick={() => sendMessage(q)}
-                                        className="text-left px-4 py-3 rounded-xl text-sm text-slate-400 hover:text-cyan-300 bg-slate-800/50 hover:bg-cyan-500/10 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-200"
+                                        className="text-left px-4 py-3 rounded-xl text-sm text-sky-300/70 hover:text-cyan-300 bg-sky-500/5 hover:bg-sky-500/10 border border-sky-500/20 hover:border-cyan-500/30 transition-all duration-200"
                                     >
                                         <span className="text-cyan-500 mr-2">→</span>{q}
                                     </motion.button>
@@ -188,14 +188,14 @@ function AIAssistant() {
                                 className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 {msg.role !== 'user' && (
-                                    <div className="shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 border border-violet-500/30 flex items-center justify-center mt-1">
-                                        <Bot size={16} className="text-violet-400" />
+                                    <div className="shrink-0 w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center mt-1">
+                                        <Bot size={16} className="text-cyan-400" />
                                     </div>
                                 )}
                                 <div
                                     className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user'
-                                            ? 'bg-gradient-to-r from-cyan-600/80 to-blue-600/80 text-white rounded-br-sm'
-                                            : 'bg-slate-800/60 text-slate-200 border border-slate-700/50 rounded-bl-sm'
+                                        ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white rounded-br-sm shadow-md shadow-sky-500/10'
+                                        : 'bg-sky-500/10 text-sky-100 border border-sky-500/20 rounded-bl-sm'
                                         }`}
                                 >
                                     {msg.role === 'user' ? (
@@ -223,12 +223,12 @@ function AIAssistant() {
                             animate={{ opacity: 1, y: 0 }}
                             className="flex gap-3 items-start"
                         >
-                            <div className="shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 border border-violet-500/30 flex items-center justify-center">
-                                <Bot size={16} className="text-violet-400" />
+                            <div className="shrink-0 w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+                                <Bot size={16} className="text-cyan-400" />
                             </div>
-                            <div className="bg-slate-800/60 border border-slate-700/50 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
-                                <Loader2 size={16} className="text-violet-400 animate-spin" />
-                                <span className="text-sm text-slate-400">Thinking...</span>
+                            <div className="bg-sky-500/10 border border-sky-500/20 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
+                                <Loader2 size={16} className="text-cyan-400 animate-spin" />
+                                <span className="text-sm text-sky-300/70">Thinking...</span>
                             </div>
                         </motion.div>
                     )}
@@ -244,7 +244,7 @@ function AIAssistant() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
                             onClick={scrollToBottom}
-                            className="absolute bottom-20 right-4 p-2 rounded-full bg-slate-700/80 border border-slate-600 text-slate-300 hover:text-white hover:bg-slate-600 transition-all shadow-lg"
+                            className="absolute bottom-20 right-4 p-2 rounded-full bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-white hover:bg-sky-500/30 transition-all shadow-lg"
                         >
                             <ChevronDown size={18} />
                         </motion.button>
@@ -252,7 +252,7 @@ function AIAssistant() {
                 </AnimatePresence>
 
                 {/* Input Bar */}
-                <div className="shrink-0 p-3 sm:p-4 border-t border-white/5 bg-slate-800/30">
+                <div className="shrink-0 p-3 sm:p-4 border-t border-sky-500/10 bg-sky-500/5">
                     <div className="flex gap-2 items-end">
                         <textarea
                             ref={inputRef}
@@ -261,7 +261,7 @@ function AIAssistant() {
                             onKeyDown={handleKeyDown}
                             placeholder="Ask about OS concepts, your system, or PowerPulse features..."
                             rows={1}
-                            className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/40 resize-none transition-all"
+                            className="flex-1 bg-sky-500/5 border border-sky-500/20 rounded-xl px-4 py-3 text-sm text-sky-100 placeholder-sky-400/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 resize-none transition-all"
                             style={{ minHeight: '44px', maxHeight: '120px' }}
                             onInput={(e) => {
                                 e.target.style.height = '44px';
@@ -273,15 +273,15 @@ function AIAssistant() {
                             onClick={() => sendMessage()}
                             disabled={!input.trim() || isLoading}
                             className={`p-3 rounded-xl transition-all duration-200 shrink-0 ${input.trim() && !isLoading
-                                    ? 'bg-gradient-to-r from-violet-600 to-cyan-600 text-white hover:from-violet-500 hover:to-cyan-500 shadow-lg shadow-violet-500/20'
-                                    : 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20'
+                                : 'bg-sky-500/10 text-sky-400/40 cursor-not-allowed'
                                 }`}
                             id="ai-send-button"
                         >
                             <Send size={18} />
                         </button>
                     </div>
-                    <p className="text-[10px] text-slate-600 mt-2 text-center">
+                    <p className="text-[10px] text-sky-400/40 mt-2 text-center">
                         Gemini 2.5 Flash • Only answers OS & PowerPulse questions
                     </p>
                 </div>
