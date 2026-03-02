@@ -1008,7 +1008,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ### Built with ❤️ by **Vishrut Gupta**
 
-<img src="assets/author.jpg" width="120" style="border-radius: 50%;" alt="Vishrut Gupta" />
+<img src="assets/author.jpeg" width="150" alt="Vishrut Gupta" />
 
 ⚡ **PowerPulse** — *See your OS in action. Monitor it. Understand it. Optimize it.*
 
