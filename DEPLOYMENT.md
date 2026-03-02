@@ -1,88 +1,205 @@
-# Deployment Guide
+# 🚀 PowerPulse — Deployment Guide
 
-PowerPulse is designed as a local system monitor, but it can be deployed in several ways depending on your needs.
+A simple step-by-step guide to get PowerPulse running on your desktop.
 
-## 1. Local Network Deployment (LAN)
+---
 
-To access the dashboard from other devices on your local network (e.g., monitor your PC from your phone):
+## ✅ Prerequisites
 
-1.  **Find your Local IP Address**:
-    -   Windows: Open terminal, run `ipconfig`. Look for "IPv4 Address" (e.g., `192.168.1.5`).
-    -   Linux/Mac: Run `ifconfig` or `ip a`.
+Make sure these are installed on your computer:
 
-2.  **Start the Backend on 0.0.0.0**:
-    By default, the backend runs on `127.0.0.1` (localhost only). To open it to the network, use this command:
+| Tool | Download Link | Check Command |
+|------|--------------|---------------|
+| **Python 3.8+** | [python.org/downloads](https://www.python.org/downloads/) | `python --version` |
+| **Node.js 16+** | [nodejs.org](https://nodejs.org/) | `node --version` |
+| **npm 8+** | Comes with Node.js | `npm --version` |
+| **Git** | [git-scm.com](https://git-scm.com/downloads) | `git --version` |
 
-    ```bash
-    cd PowerPulse/src
-    python -m uvicorn powerpulse.api:app --reload --host 0.0.0.0 --port 8000
-    ```
+---
 
-3.  **Start the Frontend**:
-    
-    ```bash
-    cd PowerPulse/frontend
-    npm run dev -- --host
-    ```
+## 📥 Step 1: Clone the Repository
 
-4.  **Access from other devices**:
-    Open a browser on your phone or other laptop and go to: `http://<YOUR_IP_ADDRESS>:5173`
-    
-    *Note: The app will automatically detect the backend IP address.*
+Open a terminal (Command Prompt / PowerShell / Terminal) and run:
 
-## 2. Standalone Executable (Windows .exe)
+```bash
+git clone https://github.com/vishrutcodes/Operating-System-Power-Consumption-Analyzer.git
+```
 
-You can package PowerPulse into a single `.exe` file for easy distribution.
+Then navigate into the project folder:
 
-1.  **Install PyInstaller**:
-    ```bash
-    pip install pyinstaller
-    ```
+```bash
+cd "Operating Systems Power Consumption Analyzer"
+```
 
-2.  **Build the Frontend**:
-    ```bash
-    cd PowerPulse/frontend
-    npm run build
-    ```
+---
 
-3.  **Create a Spec File**:
-    Create a file named `powerpulse.spec` in `PowerPulse/src` to bundle the Python code and the React `dist` folder.
+## 🐍 Step 2: Set Up the Backend (Python)
 
-    *(Detailed instructions require configuring PyInstaller to serve static files from the backend)*.
+Navigate to the PowerPulse directory:
 
-## 3. Server Deployment (Remote Monitoring)
+```bash
+cd PowerPulse
+```
 
-If you want to monitor a remote server (e.g., a VPS or Home Lab server):
+### 2a. Create a Virtual Environment
 
-1.  **Clone Repo on Server**:
-    ```bash
-    git clone https://github.com/vishrutcodes/Operating-System-Power-Consumption-Analyzer.git
-    cd "Operating Systems Power Consumption Analyzer"
-    ```
+```bash
+python -m venv .venv
+```
 
-2.  **Setup Backend**:
-    ```bash
-    cd PowerPulse
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
-    ```
+### 2b. Activate the Virtual Environment
 
-3.  **Build Frontend**:
-    ```bash
-    cd frontend
-    npm install
-    npm run build
-    ```
-    *(You can also build locally and SCP the `dist` folder to the server)*
+**Windows (Command Prompt):**
+```bash
+.venv\Scripts\activate
+```
 
-4.  **Run with Production Server**:
-    We recommend using a process manager like `systemd` or `supervisor`.
-    
-    Command to run:
-    ```bash
-    # Ensure deployment includes the frontend build serving logic or run them separately
-    uvicorn powerpulse.api:app --host 0.0.0.0 --port 8000
-    ```
+**Windows (PowerShell):**
+```bash
+.venv\Scripts\Activate.ps1
+```
 
-    *Note: You will need to configure the backend to serve the frontend static files if you want a single-port deployment, or serve the `dist` folder with Nginx.*
+**Linux / macOS:**
+```bash
+source .venv/bin/activate
+```
+
+> ✅ You should see `(.venv)` at the beginning of your terminal prompt.
+
+### 2c. Install Python Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+This installs: `psutil`, `fastapi`, `uvicorn`, `websockets`, `google-genai`, `python-dotenv`, `rich`
+
+---
+
+## 🌐 Step 3: Set Up the Frontend (React)
+
+Open a **new terminal** and navigate to the frontend folder:
+
+```bash
+cd "Operating Systems Power Consumption Analyzer/PowerPulse/frontend"
+```
+
+Install Node.js dependencies:
+
+```bash
+npm install
+```
+
+---
+
+## 🔑 Step 4: Configure the AI Assistant (Optional)
+
+If you want the AI chatbot to work, you need a free Gemini API key:
+
+1. Go to [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+2. Click **"Create API Key"**
+3. Copy the key
+
+Then create a `.env` file inside the `PowerPulse/` folder:
+
+```bash
+# File: PowerPulse/.env
+GEMINI_API_KEY=paste_your_api_key_here
+```
+
+> 💡 The rest of the app works perfectly fine without this key. Only the AI Assistant page needs it.
+
+---
+
+## ▶️ Step 5: Start the Application
+
+You need **two terminals** running at the same time.
+
+### Terminal 1 — Start the Backend
+
+```bash
+cd "Operating Systems Power Consumption Analyzer/PowerPulse"
+.venv\Scripts\activate
+cd src
+uvicorn powerpulse.api:app --reload --host 127.0.0.1 --port 8000
+```
+
+You should see:
+```
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process
+```
+
+### Terminal 2 — Start the Frontend
+
+```bash
+cd "Operating Systems Power Consumption Analyzer/PowerPulse/frontend"
+npm run dev
+```
+
+You should see:
+```
+  VITE v5.x.x  ready in XXX ms
+
+  ➜  Local:   http://localhost:5173/
+```
+
+---
+
+## 🖥️ Step 6: Open in Browser
+
+Open your browser and go to:
+
+### 👉 [http://localhost:5173](http://localhost:5173)
+
+That's it! PowerPulse is now running on your desktop. 🎉
+
+---
+
+## ⚡ Quick Start (Windows Only)
+
+Instead of Steps 5 & 6, you can simply double-click:
+
+```
+PowerPulse/run_app.bat
+```
+
+This automatically starts both servers for you.
+
+---
+
+## 🛑 How to Stop
+
+- **Backend**: Press `Ctrl + C` in Terminal 1
+- **Frontend**: Press `Ctrl + C` in Terminal 2
+
+---
+
+## ❓ Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `python not found` | Install Python from [python.org](https://www.python.org/downloads/) and add to PATH |
+| `node not found` | Install Node.js from [nodejs.org](https://nodejs.org/) |
+| `pip install fails` | Make sure virtual environment is activated (you should see `(.venv)`) |
+| `npm install fails` | Delete `node_modules` folder and run `npm install` again |
+| Backend shows errors | Make sure you're in the `src/` folder when running uvicorn |
+| Frontend can't connect | Make sure the backend is running on port 8000 first |
+| AI Assistant not working | Check that `.env` file has a valid `GEMINI_API_KEY` |
+| Charts show no data | Wait a few seconds — WebSocket needs to connect |
+| `PowerShell script blocked` | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| Port 8000 already in use | Kill the process: `netstat -ano \| findstr :8000` then `taskkill /PID <pid> /F` |
+
+---
+
+## 📌 Quick Reference
+
+| What | URL |
+|------|-----|
+| **App** | [http://localhost:5173](http://localhost:5173) |
+| **API** | [http://127.0.0.1:8000](http://127.0.0.1:8000) |
+| **API Docs** | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) |
+
+---
+
+*Made with ❤️ — PowerPulse Team*
