@@ -154,9 +154,6 @@ function AIAssistant() {
                 >
                     {!hasMessages && (
                         <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in-up pt-8">
-                            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 mb-8">
-                                <Sparkles className="text-cyan-400" size={40} />
-                            </div>
                             <h2 className="text-xl font-bold text-slate-100 mb-2">Ask me anything about Operating Systems</h2>
                             <p className="text-slate-400 text-sm max-w-md mb-10">
                                 I can explain OS concepts, analyze your live system metrics, and help you understand PowerPulse features.
