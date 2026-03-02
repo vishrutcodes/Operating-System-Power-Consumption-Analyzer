@@ -202,7 +202,9 @@ This automatically starts both servers for you.
 
 ---
 <div align="center">
-<img src="assets/vishrut.jpg" width="150" alt="Vishrut Gupta" />
+
 ### Built with ❤️ by **Vishrut Gupta**
 
+<img src="assets/vishrut.jpg" width="150" alt="Vishrut Gupta" />
 
+</div>
