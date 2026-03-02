@@ -201,5 +201,7 @@ This automatically starts both servers for you.
 | **API Docs** | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) |
 
 ---
+<img src="assets/vishrut.jpg" width="150" alt="Vishrut Gupta" />
+### Built with ❤️ by **Vishrut Gupta**
 
-*Built with ❤️ by **Vishrut Gupta***
+
