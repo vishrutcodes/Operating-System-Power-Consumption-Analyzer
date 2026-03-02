@@ -241,7 +241,7 @@ function AIAssistant() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
                             onClick={scrollToBottom}
-                            className="absolute bottom-20 right-4 p-2 rounded-full bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-white hover:bg-sky-500/30 transition-all shadow-lg"
+                            className="absolute bottom-24 right-8 p-2 rounded-full bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-white hover:bg-sky-500/30 transition-all shadow-lg z-10"
                         >
                             <ChevronDown size={18} />
                         </motion.button>

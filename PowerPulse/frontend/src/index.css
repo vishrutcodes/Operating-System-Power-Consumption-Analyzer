@@ -69,23 +69,7 @@ body {
   background-color: var(--app-bg);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+/* Default scrollbar behavior */
 
 .glass-panel {
   @apply bg-slate-800/40 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl;
@@ -363,15 +347,7 @@ body {
   pointer-events: none;
 }
 
-/* Enhanced scrollbar with gradient */
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #334155, #475569);
-  border-radius: 4px;
-}
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #475569, #64748b);
-}
 
 
 [data-theme="light"] .bg-slate-900 {
@@ -486,9 +462,7 @@ body {
   color: #0891b2;
 }
 
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-}
+
 
 /* Report print layout */
 @media print {
