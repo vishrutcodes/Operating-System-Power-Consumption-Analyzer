@@ -628,3 +628,28 @@ body {
 [data-theme="light"] .ai-message-content strong {
   color: #1e293b;
 }
+
+/* Light theme: ensure AI chat text is dark and readable */
+[data-theme="light"] #ai-assistant-page .text-slate-200 {
+  color: #1e293b;
+}
+
+[data-theme="light"] #ai-assistant-page .text-slate-300 {
+  color: #334155;
+}
+
+[data-theme="light"] #ai-assistant-page .text-slate-100 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .ai-message-content {
+  color: #1e293b;
+}
+
+[data-theme="light"] .ai-message-content em {
+  color: #475569;
+}
+
+[data-theme="light"] .ai-list li::before {
+  color: #0891b2;
+}

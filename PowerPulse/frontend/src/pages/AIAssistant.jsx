@@ -121,7 +121,7 @@ function AIAssistant() {
     return (
         <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]" id="ai-assistant-page">
             {/* Header */}
-            <div className="flex items-center justify-between mb-4 shrink-0">
+            <div className="flex items-center justify-between mb-6 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-cyan-500/20 rounded-xl border border-cyan-500/30">
                         <Bot className="text-cyan-400" size={28} />
@@ -130,7 +130,7 @@ function AIAssistant() {
                         <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradient-shift_4s_ease_infinite]">
                             AI Assistant
                         </h1>
-                        <p className="text-xs text-sky-400/60">Powered by Gemini 2.5 Flash • OS & PowerPulse expert</p>
+                        <p className="text-xs text-slate-400">Powered by Gemini 2.5 Flash • OS & PowerPulse expert</p>
                     </div>
                 </div>
                 {hasMessages && (
@@ -153,15 +153,15 @@ function AIAssistant() {
                     style={{ scrollBehavior: 'smooth' }}
                 >
                     {!hasMessages && (
-                        <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in-up">
-                            <div className="p-4 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 mb-6">
-                                <Sparkles className="text-cyan-400" size={48} />
+                        <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in-up pt-8">
+                            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 mb-8">
+                                <Sparkles className="text-cyan-400" size={40} />
                             </div>
-                            <h2 className="text-xl font-bold text-sky-100 mb-2">Ask me anything about Operating Systems</h2>
-                            <p className="text-sky-400/60 text-sm max-w-md mb-8">
+                            <h2 className="text-xl font-bold text-slate-100 mb-2">Ask me anything about Operating Systems</h2>
+                            <p className="text-slate-400 text-sm max-w-md mb-10">
                                 I can explain OS concepts, analyze your live system metrics, and help you understand PowerPulse features.
                             </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg w-full">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg w-full mb-6">
                                 {SUGGESTED_QUESTIONS.map((q, i) => (
                                     <motion.button
                                         key={i}
@@ -169,7 +169,7 @@ function AIAssistant() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.05 }}
                                         onClick={() => sendMessage(q)}
-                                        className="text-left px-4 py-3 rounded-xl text-sm text-sky-300/70 hover:text-cyan-300 bg-sky-500/5 hover:bg-sky-500/10 border border-sky-500/20 hover:border-cyan-500/30 transition-all duration-200"
+                                        className="text-left px-4 py-3 rounded-xl text-sm text-slate-300 hover:text-cyan-300 bg-sky-500/5 hover:bg-sky-500/10 border border-sky-500/20 hover:border-cyan-500/30 transition-all duration-200"
                                     >
                                         <span className="text-cyan-500 mr-2">→</span>{q}
                                     </motion.button>
@@ -195,7 +195,7 @@ function AIAssistant() {
                                 <div
                                     className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user'
                                         ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white rounded-br-sm shadow-md shadow-sky-500/10'
-                                        : 'bg-sky-500/10 text-sky-100 border border-sky-500/20 rounded-bl-sm'
+                                        : 'bg-sky-500/10 text-slate-200 border border-sky-500/20 rounded-bl-sm'
                                         }`}
                                 >
                                     {msg.role === 'user' ? (
@@ -228,7 +228,7 @@ function AIAssistant() {
                             </div>
                             <div className="bg-sky-500/10 border border-sky-500/20 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
                                 <Loader2 size={16} className="text-cyan-400 animate-spin" />
-                                <span className="text-sm text-sky-300/70">Thinking...</span>
+                                <span className="text-sm text-slate-400">Thinking...</span>
                             </div>
                         </motion.div>
                     )}
@@ -252,7 +252,7 @@ function AIAssistant() {
                 </AnimatePresence>
 
                 {/* Input Bar */}
-                <div className="shrink-0 p-3 sm:p-4 border-t border-sky-500/10 bg-sky-500/5">
+                <div className="shrink-0 p-4 sm:p-5 border-t border-sky-500/10 bg-sky-500/5">
                     <div className="flex gap-2 items-end">
                         <textarea
                             ref={inputRef}
@@ -261,7 +261,7 @@ function AIAssistant() {
                             onKeyDown={handleKeyDown}
                             placeholder="Ask about OS concepts, your system, or PowerPulse features..."
                             rows={1}
-                            className="flex-1 bg-sky-500/5 border border-sky-500/20 rounded-xl px-4 py-3 text-sm text-sky-100 placeholder-sky-400/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 resize-none transition-all"
+                            className="flex-1 bg-sky-500/5 border border-sky-500/20 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 resize-none transition-all"
                             style={{ minHeight: '44px', maxHeight: '120px' }}
                             onInput={(e) => {
                                 e.target.style.height = '44px';
@@ -274,14 +274,14 @@ function AIAssistant() {
                             disabled={!input.trim() || isLoading}
                             className={`p-3 rounded-xl transition-all duration-200 shrink-0 ${input.trim() && !isLoading
                                 ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20'
-                                : 'bg-sky-500/10 text-sky-400/40 cursor-not-allowed'
+                                : 'bg-sky-500/10 text-slate-400 cursor-not-allowed'
                                 }`}
                             id="ai-send-button"
                         >
                             <Send size={18} />
                         </button>
                     </div>
-                    <p className="text-[10px] text-sky-400/40 mt-2 text-center">
+                    <p className="text-[10px] text-slate-500 mt-3 text-center">
                         Gemini 2.5 Flash • Only answers OS & PowerPulse questions
                     </p>
                 </div>
