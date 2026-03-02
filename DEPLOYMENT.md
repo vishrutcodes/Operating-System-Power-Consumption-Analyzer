@@ -208,3 +208,19 @@ This automatically starts both servers for you.
 <img src="assets/vishrut.jpg" width="150" alt="Vishrut Gupta" />
 
 </div>
+
+---
+
+## ⚠️ Copyright & Legal Notice
+
+> **© 2025 Vishrut Gupta. All rights reserved.**
+>
+> This project, including all source code, documentation, design assets, UI components, and associated intellectual property, is the original work of **Vishrut Gupta** and is protected under the [MIT License](LICENSE).
+>
+> **Unauthorized reproduction, distribution, modification, or commercial use of this software or any of its components without explicit written permission from the author is strictly prohibited and may result in legal action.**
+>
+> If you wish to use, fork, or reference this project, you **must** provide proper attribution to the original author and retain all copyright notices in all copies or substantial portions of the software.
+>
+> For permissions, collaborations, or inquiries, please contact the author via [GitHub](https://github.com/vishrutcodes).
+
+**Disclaimer:** This software is provided "as is", without warranty of any kind, express or implied. The author shall not be held liable for any damages arising from the use of this software.
