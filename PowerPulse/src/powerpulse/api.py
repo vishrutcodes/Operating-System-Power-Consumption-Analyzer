@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 import asyncio
 from dataclasses import asdict
 from typing import Optional, List
@@ -7,15 +8,22 @@ from pydantic import BaseModel
 from .monitor import SystemMonitor
 from . import database
 import os
-import math
-import json
+from pathlib import Path
 from dotenv import load_dotenv
 from google import genai
 
-load_dotenv()
+# Resolve .env from project root (PowerPulse/) regardless of cwd
+_project_root = Path(__file__).resolve().parents[2]  # src/powerpulse/api.py -> PowerPulse/
+load_dotenv(_project_root / ".env")
 
 
-app = FastAPI(title="PowerPulse API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    database.init_db()
+    asyncio.create_task(log_metrics_loop())
+    yield
+
+app = FastAPI(title="PowerPulse API", lifespan=lifespan)
 # Trigger reload for thermal updates
 
 app.add_middleware(
@@ -34,7 +42,6 @@ async def log_metrics_loop():
         try:
             # Gather data
             cpu = monitor.get_cpu_info().usage_percent
-            mem = monitor.get_top_processes(1)[0].memory_percent if monitor.get_top_processes(1) else 0 # Rough proxy if needed, or query psutil again.
             # Actually monitor doesn't expose global mem usage directly in a simple method yet, let's add it or use psutil here.
             # Best to use monitor. But monitor.get_system_score uses mem.
             # Let's peek at psutil directly here or add get_memory_info to monitor?
@@ -62,10 +69,7 @@ async def log_metrics_loop():
             
         await asyncio.sleep(60)
 
-@app.on_event("startup")
-async def startup_event():
-    database.init_db()
-    asyncio.create_task(log_metrics_loop())
+# Startup logic moved to lifespan context manager above
 
 @app.get("/api/history")
 async def get_history(hours: int = 24):
@@ -86,8 +90,8 @@ async def get_history(hours: int = 24):
             "cpu": curr['cpu_usage'],
             "memory": curr['memory_usage'],
             "battery": curr['battery_percent'],
-            "thermal_max": curr['thermal_max_temp'] if 'thermal_max_temp' in curr.keys() else 0,
-            "thermal_avg": curr['thermal_avg_temp'] if 'thermal_avg_temp' in curr.keys() else 0,
+            "thermal_max": curr['thermal_max_temp'] if 'thermal_max_temp' in curr else 0,
+            "thermal_avg": curr['thermal_avg_temp'] if 'thermal_avg_temp' in curr else 0,
             "net_sent_rate": (curr['net_bytes_sent'] - prev['net_bytes_sent']) / time_diff,
             "net_recv_rate": (curr['net_bytes_recv'] - prev['net_bytes_recv']) / time_diff,
             "disk_read_rate": (curr['disk_bytes_read'] - prev['disk_bytes_read']) / time_diff,
@@ -148,7 +152,7 @@ async def websocket_endpoint(websocket: WebSocket):
         # Check if already closed
         try:
             await websocket.close()
-        except:
+        except Exception:
             pass
 
 @app.post("/api/process/{pid}/kill")
@@ -203,7 +207,7 @@ def resume_process(pid: int):
         return {"success": False, "message": str(e)}
 
 class AffinityRequest(BaseModel):
-    cores: list[int]
+    cores: List[int]
 
 @app.post("/api/process/{pid}/affinity")
 def set_affinity(pid: int, req: AffinityRequest):
