@@ -1,0 +1,10 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/PowerPulse/.venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/PowerPulse/src",
+        "${workspaceFolder}/PowerPulse/.venv/Lib/site-packages"
+    ],
+    "python.envFile": "${workspaceFolder}/PowerPulse/.env",
+    "python.venvPath": "${workspaceFolder}/PowerPulse",
+    "python.venvFolders": [".venv"]
+}

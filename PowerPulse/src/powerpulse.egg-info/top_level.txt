@@ -1,1 +1,3 @@
 powerpulse
+test_full_stack
+test_thermal

@@ -1,4 +1,6 @@
 pyproject.toml
+src/test_full_stack.py
+src/test_thermal.py
 src/powerpulse/__init__.py
 src/powerpulse/api.py
 src/powerpulse/cli.py
