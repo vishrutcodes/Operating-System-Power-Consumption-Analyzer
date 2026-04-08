@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from 'react';
-import { Bot, Send, User, Sparkles, Loader2, Trash2, ChevronDown } from 'lucide-react';
+import { Bot, Send, User, Sparkles, Loader2, Trash2, ChevronDown, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE } from '../config';
 import { MetricsContext } from '../App';
@@ -68,36 +68,67 @@ function AIAssistant() {
         return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const sendMessage = async (text) => {
+    const sendMessage = async (text, isRetry = false) => {
         const msg = text || input.trim();
         if (!msg || isLoading) return;
 
-        const userMsg = { role: 'user', text: msg };
-        const newMessages = [...messages, userMsg];
-        setMessages(newMessages);
-        setInput('');
+        if (!isRetry) {
+            const userMsg = { role: 'user', text: msg };
+            setMessages(prev => [...prev, userMsg]);
+            setInput('');
+        } else {
+            // Remove the last error message before retrying
+            setMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last && last.role === 'model' && last.isError) {
+                    return prev.slice(0, -1);
+                }
+                return prev;
+            });
+        }
+
         setIsLoading(true);
 
         try {
-            // Build history for the API (exclude the last user message since we send it as `message`)
-            const history = newMessages.slice(0, -1).map(m => ({
+            // Build history from current messages (get fresh state)
+            const currentMessages = isRetry
+                ? messages.filter(m => !(m.role === 'model' && m.isError))
+                : [...messages, { role: 'user', text: msg }];
+
+            const history = currentMessages.slice(0, -1).map(m => ({
                 role: m.role === 'user' ? 'user' : 'model',
                 text: m.text,
             }));
 
+            const userMessage = currentMessages[currentMessages.length - 1]?.text || msg;
+
             const res = await fetch(`${API_BASE}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg, history }),
+                body: JSON.stringify({ message: userMessage, history }),
             });
 
             const data = await res.json();
-            const botMsg = { role: 'model', text: data.reply || 'Sorry, I could not generate a response.' };
-            setMessages(prev => [...prev, botMsg]);
+            if (data.success === false) {
+                setMessages(prev => [...prev, {
+                    role: 'model',
+                    text: data.reply || 'Sorry, I could not generate a response.',
+                    isError: true,
+                    retryMessage: userMessage,
+                }]);
+            } else {
+                const botMsg = { role: 'model', text: data.reply || 'Sorry, I could not generate a response.' };
+                setMessages(prev => [...prev, botMsg]);
+            }
         } catch (err) {
             setMessages(prev => [
                 ...prev,
-                { role: 'model', text: `⚠️ Failed to reach the AI backend. Make sure the server is running.\n\nError: ${err.message}` },
+                {
+                    role: 'model',
+                    text: `⚠️ Failed to reach the AI backend. Make sure the server is running.`,
+                    isError: true,
+                    retryMessage: msg,
+                },
             ]);
         } finally {
             setIsLoading(false);
@@ -192,16 +223,30 @@ function AIAssistant() {
                                 <div
                                     className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user'
                                         ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white rounded-br-sm shadow-md shadow-sky-500/10'
-                                        : 'bg-sky-500/10 text-slate-200 border border-sky-500/20 rounded-bl-sm'
+                                        : msg.isError
+                                            ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30 rounded-bl-sm'
+                                            : 'bg-sky-500/10 text-slate-200 border border-sky-500/20 rounded-bl-sm'
                                         }`}
                                 >
                                     {msg.role === 'user' ? (
                                         <p className="whitespace-pre-wrap">{msg.text}</p>
                                     ) : (
-                                        <div
-                                            className="ai-message-content"
-                                            dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }}
-                                        />
+                                        <>
+                                            <div
+                                                className="ai-message-content"
+                                                dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }}
+                                            />
+                                            {msg.isError && msg.retryMessage && (
+                                                <button
+                                                    onClick={() => sendMessage(msg.retryMessage, true)}
+                                                    disabled={isLoading}
+                                                    className="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 hover:text-cyan-200 border border-cyan-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <RefreshCw size={12} />
+                                                    Retry
+                                                </button>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                                 {msg.role === 'user' && (

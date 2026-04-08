@@ -438,6 +438,10 @@ RULES:
 7. When answering OS theory questions, connect them to what the user can observe in PowerPulse.
 """
 
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 1.0  # seconds
+
 @app.post("/api/chat")
 async def chat_with_ai(req: ChatRequest):
     try:
@@ -512,19 +516,44 @@ LIVE SYSTEM DATA (current snapshot):
         })
 
         client = genai.Client(api_key=api_key)
+        gen_config = {
+            "system_instruction": SYSTEM_PROMPT + live_context,
+            "temperature": 0.7,
+            "max_output_tokens": 2048,
+        }
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=contents,
-            config={
-                "system_instruction": SYSTEM_PROMPT + live_context,
-                "temperature": 0.7,
-                "max_output_tokens": 2048,
-            }
-        )
+        # Try each model with retries (handles 503 / rate-limit errors)
+        last_error = None
+        for model_name in GEMINI_MODELS:
+            for attempt in range(MAX_RETRIES):
+                try:
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=contents,
+                        config=gen_config,
+                    )
+                    reply = response.text if response.text else "I'm sorry, I couldn't generate a response. Please try again."
+                    return {"success": True, "reply": reply}
+                except Exception as e:
+                    last_error = e
+                    err_str = str(e).lower()
+                    is_retryable = any(kw in err_str for kw in ["503", "unavailable", "overloaded", "rate", "resource_exhausted", "429", "quota"])
+                    if is_retryable and attempt < MAX_RETRIES - 1:
+                        delay = RETRY_BASE_DELAY * (2 ** attempt)
+                        print(f"[AI] {model_name} attempt {attempt+1} failed ({e}), retrying in {delay}s...")
+                        await asyncio.sleep(delay)
+                    elif is_retryable:
+                        print(f"[AI] {model_name} exhausted {MAX_RETRIES} retries, trying next model...")
+                        break  # move to next model
+                    else:
+                        raise  # non-retryable error, bubble up immediately
 
-        reply = response.text if response.text else "I'm sorry, I couldn't generate a response. Please try again."
-        return {"success": True, "reply": reply}
+        # All models exhausted
+        print(f"[AI] All models failed. Last error: {last_error}")
+        return {
+            "success": False,
+            "reply": "⚠️ The AI service is currently experiencing very high demand across all models. Please wait a moment and try again."
+        }
 
     except Exception as e:
         print(f"Chat error: {e}")
