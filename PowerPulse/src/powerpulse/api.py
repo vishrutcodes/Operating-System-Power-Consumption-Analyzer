@@ -537,6 +537,26 @@ LIVE SYSTEM DATA (current snapshot):
                 except Exception as e:
                     last_error = e
                     err_str = str(e).lower()
+                    # Check for permission / auth errors first – not retryable, key is dead
+                    is_permission_error = any(kw in err_str for kw in ["403", "permission_denied", "denied access", "forbidden"])
+                    if is_permission_error:
+                        print(f"[AI] API key rejected (403 PERMISSION_DENIED)")
+                        return {
+                            "success": False,
+                            "reply": (
+                                "🔑 **Your Gemini API key has been revoked or disabled.**\n\n"
+                                "This usually happens when a key is exposed in a public repository "
+                                "and Google automatically disables it for security.\n\n"
+                                "**To fix this:**\n"
+                                "1. Go to [Google AI Studio](https://aistudio.google.com/apikey)\n"
+                                "2. Generate a **new** API key\n"
+                                "3. Update `PowerPulse/.env` with the new key:\n"
+                                "   ```\n"
+                                "   GEMINI_API_KEY=your_new_key_here\n"
+                                "   ```\n"
+                                "4. **Restart the backend server**"
+                            ),
+                        }
                     is_retryable = any(kw in err_str for kw in ["503", "unavailable", "overloaded", "rate", "resource_exhausted", "429", "quota"])
                     if is_retryable and attempt < MAX_RETRIES - 1:
                         delay = RETRY_BASE_DELAY * (2 ** attempt)
